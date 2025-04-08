@@ -89,8 +89,11 @@ const MapComponent = (() => {
       }
     });
     
+    // Create a unique key for this city using both name and state
+    const cityKey = `${name}, ${state}`;
+    
     // Store marker reference
-    cityMarkers[name] = {
+    cityMarkers[cityKey] = {
       marker,
       element: markerElement,
       city
@@ -103,8 +106,14 @@ const MapComponent = (() => {
    */
   const updateCityMarker = (city) => {
     const name = city.properties.name;
-    const markerData = cityMarkers[name];
-    if (!markerData) return;
+    const state = city.properties.state;
+    const cityKey = `${name}, ${state}`;
+    
+    const markerData = cityMarkers[cityKey];
+    if (!markerData) {
+      console.warn(`City marker not found for ${cityKey}`);
+      return;
+    }
     
     const { marker, element } = markerData;
     const status = city.properties.status;
@@ -276,10 +285,35 @@ const MapComponent = (() => {
   /**
    * Centers the map on a city
    * @param {String} cityName - Name of the city to center on
+   * @param {String} state - State of the city (optional, but recommended for cities with same names)
    */
-  const centerOnCity = (cityName) => {
-    const markerData = cityMarkers[cityName];
-    if (!markerData) return;
+  const centerOnCity = (cityName, state) => {
+    let cityKey = cityName;
+    
+    // If a state is provided, use the full key format
+    if (state) {
+      cityKey = `${cityName}, ${state}`;
+    }
+    
+    // Try to find the city in the cityMarkers map
+    let markerData = cityMarkers[cityKey];
+    
+    // If not found and no state was provided, try to infer based on the first found match
+    if (!markerData && !state) {
+      // Look for any city that starts with this name
+      const possibleKeys = Object.keys(cityMarkers).filter(key => key.startsWith(`${cityName}, `));
+      if (possibleKeys.length > 0) {
+        // Use the first match
+        cityKey = possibleKeys[0];
+        markerData = cityMarkers[cityKey];
+        console.log(`Inferred city key as ${cityKey}`);
+      }
+    }
+    
+    if (!markerData) {
+      console.warn(`No marker data found for city: ${cityKey}`);
+      return;
+    }
     
     const { marker, city } = markerData;
     const coords = city.geometry.coordinates;
@@ -314,6 +348,29 @@ const MapComponent = (() => {
   };
   
   /**
+   * Logs the status of city markers for debugging
+   * @param {String} cityFilter - Optional filter to only show cities containing this string (case insensitive)
+   */
+  const logCityMarkerStatus = (cityFilter = '') => {
+    const filter = cityFilter.toLowerCase();
+    console.group('City Marker Status');
+    
+    Object.entries(cityMarkers).forEach(([cityKey, { city }]) => {
+      if (!filter || cityKey.toLowerCase().includes(filter)) {
+        const props = city.properties;
+        console.log(
+          `${cityKey}: status=${props.status}, ` +
+          `infected=${props.infectedCount}, ` +
+          `recovered=${props.recoveredCount}, ` +
+          `deceased=${props.deceasedCount}`
+        );
+      }
+    });
+    
+    console.groupEnd();
+  };
+  
+  /**
    * Initializes the map component
    */
   const init = async () => {
@@ -325,6 +382,7 @@ const MapComponent = (() => {
     init,
     updateAllMarkers,
     centerOnCity,
-    resetMap
+    resetMap,
+    logCityMarkerStatus
   };
 })(); 
