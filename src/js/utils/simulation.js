@@ -17,10 +17,10 @@ const SimulationEngine = (() => {
   const defaultParams = {
     rFactor: 2.5,
     incubationPeriod: 5,
-    infectiousPeriod: 14,
-    asymptomaticRate: 0.3,
+    infectiousPeriod: 10,
+    asymptomaticRate: 0.4,
     transmissionMode: 'airborne',
-    mortalityRate: 0.02,
+    mortalityRate: 0.01,
     recoveryPeriod: 14,
     immunityDuration: 180,
     populationDensityFactor: 1.0,
