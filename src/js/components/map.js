@@ -113,13 +113,19 @@ const MapComponent = (() => {
     // Reset classes
     element.className = 'city-marker';
     
-    // Add class based on status
-    if (status === 'infected' && infectedCount > 0) {
+    // Add class based on status and infected count
+    if (infectedCount > 0) {
+      // Always show as infected if there are any infected people, regardless of status
       element.classList.add('infected');
       
       // Add high-infection class if there are many infections
       if (infectedCount > city.properties.population * 0.05) {
         element.classList.add('high-infection');
+      }
+      
+      // Make sure status is properly set to 'infected' if there are infected people
+      if (status !== 'infected') {
+        city.properties.status = 'infected';
       }
     } else if (status === 'recovered') {
       element.classList.add('recovered');

@@ -256,6 +256,9 @@ const SimulationEngine = (() => {
       zeroDaysCounter = 0; // Reset counter if there are significant infections
     }
     
+    // Fix any status-count inconsistencies
+    fixNegativeInfections();
+    
     // End simulation if conditions are met
     // If runUntilEradication is true, only end if infections reach exactly 0 for several days or max days reached
     // Otherwise, use the standard low infection threshold
@@ -463,6 +466,11 @@ const SimulationEngine = (() => {
   const processRecoveryAndMortality = (city) => {
     const props = city.properties;
     
+    // Always ensure status matches infected count
+    if (props.infectedCount > 0 && props.status !== 'infected') {
+      props.status = 'infected';
+    }
+    
     // If no infected, ensure status is updated correctly
     if (props.infectedCount <= 0) {
       // If there were any recoveries, mark as recovered
@@ -546,9 +554,19 @@ const SimulationEngine = (() => {
     // When there's only 1 infected person left, increase likelihood of complete recovery
     // This ensures cities don't get stuck with 1 infected indefinitely
     if (infectedAfterDeaths === 1) {
-      // 80% chance of recovery when only 1 infected person remains
-      // This ensures eventually all infections clear out
-      newRecoveries = Math.random() < 0.8 ? 1 : 0;
+      // Higher chance of recovery when only 1 infected person remains
+      // The longer they've been infected, the higher the chance of recovery
+      let recoveryChance = 0.8; // Base 80% chance
+      
+      // If this city has been stuck with 1 infected for a long time (>30 days), 
+      // gradually increase recovery chance to 100%
+      if (props.daysSinceInfection > 30) {
+        // Add 0.5% chance per day beyond 30 days, capped at 100%
+        const bonusChance = Math.min(0.2, (props.daysSinceInfection - 30) * 0.005);
+        recoveryChance += bonusChance;
+      }
+      
+      newRecoveries = Math.random() < recoveryChance ? 1 : 0;
     } else if (currentDay < 30) {
       // Reduce recovery rate in the early days
       newRecoveries = Math.round(infectedAfterDeaths * 0.3);
@@ -710,28 +728,33 @@ const SimulationEngine = (() => {
   };
   
   /**
-   * Fixes negative infection counts in cities
+   * Fixes negative infection counts and status inconsistencies in cities
    */
   const fixNegativeInfections = () => {
     const cities = CityDataUtil.getAllCities().features;
     if (!cities) return;
     
     cities.forEach(city => {
-      if (city.properties.infectedCount < 0) {
-        console.error(`Fixed negative infection count in ${city.properties.name}: ${city.properties.infectedCount} → 0`);
-        city.properties.infectedCount = 0;
-        
-        // If there are no infections, update the city status accordingly
-        if (city.properties.status === 'infected') {
-          city.properties.status = city.properties.recoveredCount > 0 ? 'recovered' : 'susceptible';
-          city.properties.recoveryDay = currentDay;
-        }
+      const props = city.properties;
+      
+      // Fix negative infection counts
+      if (props.infectedCount < 0) {
+        console.error(`Fixed negative infection count in ${props.name}: ${props.infectedCount} → 0`);
+        props.infectedCount = 0;
       }
       
-      // Double check that any city with zero infections shouldn't be 'infected'
-      if (city.properties.infectedCount === 0 && city.properties.status === 'infected') {
-        city.properties.status = city.properties.recoveredCount > 0 ? 'recovered' : 'susceptible';
-        city.properties.recoveryDay = currentDay;
+      // Fix status inconsistencies
+      // Case 1: Should be infected but isn't
+      if (props.infectedCount > 0 && props.status !== 'infected') {
+        console.warn(`Fixed status inconsistency in ${props.name}: has ${props.infectedCount} infected but status was '${props.status}'. Setting to 'infected'.`);
+        props.status = 'infected';
+      }
+      
+      // Case 2: Should not be infected but is
+      if (props.infectedCount === 0 && props.status === 'infected') {
+        props.status = props.recoveredCount > 0 ? 'recovered' : 'susceptible';
+        props.recoveryDay = currentDay;
+        console.warn(`Fixed status inconsistency in ${props.name}: no infected people but status was 'infected'. Setting to '${props.status}'.`);
       }
     });
   };
