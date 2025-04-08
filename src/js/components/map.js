@@ -64,9 +64,9 @@ const MapComponent = (() => {
         <p>Population: ${population.toLocaleString()}</p>
         ${!patientZeroSet ? '<button class="select-city-btn">Set as Patient Zero</button>' : ''}
         <div class="city-stats">
-          <div class="infected-stat">Infected: <span class="infected-count">0</span></div>
-          <div class="deceased-stat">Deceased: <span class="deceased-count">0</span></div>
-          <div class="recovered-stat">Recovered: <span class="recovered-count">0</span></div>
+          <div class="infected-stat">Infected: <span class="infected-count">${city.properties.infectedCount.toLocaleString()}</span></div>
+          <div class="deceased-stat">Deceased: <span class="deceased-count">${city.properties.deceasedCount.toLocaleString()}</span></div>
+          <div class="recovered-stat">Recovered: <span class="recovered-count">${city.properties.recoveredCount.toLocaleString()}</span></div>
         </div>
       </div>
     `;
@@ -76,7 +76,7 @@ const MapComponent = (() => {
     
     // Handle popup open
     marker.on('popupopen', () => {
-      // Update stats in popup
+      // Update stats in popup with current values
       updateCityPopupStats(marker, city);
       
       // Add event listener to "Set as Patient Zero" button if it exists
@@ -114,7 +114,7 @@ const MapComponent = (() => {
     element.className = 'city-marker';
     
     // Add class based on status
-    if (status === 'infected') {
+    if (status === 'infected' && infectedCount > 0) {
       element.classList.add('infected');
       
       // Add high-infection class if there are many infections
@@ -126,6 +126,9 @@ const MapComponent = (() => {
     } else if (status === 'deceased') {
       element.classList.add('deceased');
     }
+    
+    // Also update the stored city object to keep it in sync
+    markerData.city = city;
     
     // Update popup content if it's open
     if (marker.isPopupOpen()) {
@@ -183,9 +186,9 @@ const MapComponent = (() => {
           <h3>${city.properties.name}, ${city.properties.state}</h3>
           <p>Population: ${city.properties.population.toLocaleString()}</p>
           <div class="city-stats">
-            <div class="infected-stat">Infected: <span class="infected-count">0</span></div>
-            <div class="deceased-stat">Deceased: <span class="deceased-count">0</span></div>
-            <div class="recovered-stat">Recovered: <span class="recovered-count">0</span></div>
+            <div class="infected-stat">Infected: <span class="infected-count">${city.properties.infectedCount.toLocaleString()}</span></div>
+            <div class="deceased-stat">Deceased: <span class="deceased-count">${city.properties.deceasedCount.toLocaleString()}</span></div>
+            <div class="recovered-stat">Recovered: <span class="recovered-count">${city.properties.recoveredCount.toLocaleString()}</span></div>
           </div>
         </div>
       `;
@@ -233,9 +236,9 @@ const MapComponent = (() => {
           <p>Population: ${city.properties.population.toLocaleString()}</p>
           <button class="select-city-btn">Set as Patient Zero</button>
           <div class="city-stats">
-            <div class="infected-stat">Infected: <span class="infected-count">0</span></div>
-            <div class="deceased-stat">Deceased: <span class="deceased-count">0</span></div>
-            <div class="recovered-stat">Recovered: <span class="recovered-count">0</span></div>
+            <div class="infected-stat">Infected: <span class="infected-count">${city.properties.infectedCount.toLocaleString()}</span></div>
+            <div class="deceased-stat">Deceased: <span class="deceased-count">${city.properties.deceasedCount.toLocaleString()}</span></div>
+            <div class="recovered-stat">Recovered: <span class="recovered-count">${city.properties.recoveredCount.toLocaleString()}</span></div>
           </div>
         </div>
       `;
@@ -246,6 +249,9 @@ const MapComponent = (() => {
       marker.off('popupopen');
       marker.on('popupopen', () => {
         console.log('City marker popup opened', city.properties.name);
+        // Update popup stats with current values
+        updateCityPopupStats(marker, city);
+        
         const selectButton = marker._popup._contentNode.querySelector('.select-city-btn');
         if (selectButton) {
           selectButton.addEventListener('click', () => {
@@ -292,6 +298,12 @@ const MapComponent = (() => {
       } else if (data.status === 'patientZeroSet') {
         patientZeroSet = true;
       }
+    });
+    
+    // Listen for statistics updates to refresh marker data
+    SimulationEngine.addEventListener('onStatisticsUpdate', () => {
+      // Ensure all city markers reflect the latest data
+      updateAllMarkers();
     });
   };
   

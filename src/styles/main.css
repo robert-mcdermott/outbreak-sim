@@ -266,6 +266,22 @@ main {
   font-size: 0.875rem;
 }
 
+.parameter.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.parameter.checkbox-wrapper input[type="checkbox"] {
+  margin: 0;
+}
+
+.parameter.checkbox-wrapper label {
+  margin-bottom: 0;
+  font-size: 0.875rem;
+}
+
 .parameter-value {
   font-size: 0.875rem;
   font-weight: 600;
@@ -429,6 +445,7 @@ main {
 
 .city-marker.recovered {
   background-color: var(--recovered-color);
+  box-shadow: 0 0 0 5px rgba(72, 187, 120, 0.3);
 }
 
 .report-backdrop {

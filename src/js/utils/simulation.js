@@ -11,6 +11,7 @@ const SimulationEngine = (() => {
   let peakInfections = 0;
   let peakInfectionDay = 0;
   let zeroDaysCounter = 0;
+  let runUntilEradication = false; // New parameter for complete eradication
   
   // Default parameters
   const defaultParams = {
@@ -187,6 +188,22 @@ const SimulationEngine = (() => {
   };
   
   /**
+   * Set whether to run until complete eradication
+   * @param {Boolean} value - Whether to run until eradication
+   */
+  const setRunUntilEradication = (value) => {
+    runUntilEradication = value;
+  };
+
+  /**
+   * Get whether simulation is set to run until complete eradication
+   * @returns {Boolean} - Whether to run until eradication
+   */
+  const getRunUntilEradication = () => {
+    return runUntilEradication;
+  };
+  
+  /**
    * Simulates a single day in the outbreak
    */
   const simulateDay = () => {
@@ -239,11 +256,30 @@ const SimulationEngine = (() => {
       zeroDaysCounter = 0; // Reset counter if there are significant infections
     }
     
-    // End simulation if near-zero infections for several consecutive days (after having a peak) or if max days reached
-    if ((peakInfections > 0 && zeroDaysCounter >= 7) || currentDay >= 365) {
-      const endReason = zeroDaysCounter >= 7 ? 
-        `Near-zero infections for ${zeroDaysCounter} days after peak of ${peakInfections} on day ${peakInfectionDay}` : 
-        "Maximum 365 days reached";
+    // End simulation if conditions are met
+    // If runUntilEradication is true, only end if infections reach exactly 0 for several days or max days reached
+    // Otherwise, use the standard low infection threshold
+    let shouldEndSimulation = false;
+    let endReason = "";
+    
+    if (currentDay >= 365) {
+      shouldEndSimulation = true;
+      endReason = "Maximum 365 days reached";
+    } else if (runUntilEradication) {
+      // Only end if infections reach exactly 0 for several consecutive days
+      if (updatedStats.infected === 0 && zeroDaysCounter >= 7) {
+        shouldEndSimulation = true;
+        endReason = `No infections for ${zeroDaysCounter} consecutive days - disease eradicated`;
+      }
+    } else {
+      // Standard ending condition - low infections for several days
+      if (peakInfections > 0 && zeroDaysCounter >= 7) {
+        shouldEndSimulation = true;
+        endReason = `Near-zero infections for ${zeroDaysCounter} days after peak of ${peakInfections} on day ${peakInfectionDay}`;
+      }
+    }
+    
+    if (shouldEndSimulation) {
       console.log(`Day ${currentDay}: Ending simulation - ${endReason}`);
       stopSimulation();
     }
@@ -427,8 +463,15 @@ const SimulationEngine = (() => {
   const processRecoveryAndMortality = (city) => {
     const props = city.properties;
     
+    // If no infected, ensure status is updated correctly
     if (props.infectedCount <= 0) {
-      props.status = 'susceptible';
+      // If there were any recoveries, mark as recovered
+      if (props.recoveredCount > 0) {
+        props.status = 'recovered';
+        props.recoveryDay = currentDay;
+      } else {
+        props.status = 'susceptible';
+      }
       return;
     }
     
@@ -466,11 +509,15 @@ const SimulationEngine = (() => {
     if (infectedBeforeProcessing < 0) {
       console.error(`Detected negative infected count (${infectedBeforeProcessing}) before processing recovery/mortality for ${props.name}. Setting to 0.`);
       props.infectedCount = 0;
+      props.status = props.recoveredCount > 0 ? 'recovered' : 'susceptible';
+      props.recoveryDay = currentDay;
       return; // Skip processing for this city
     }
     
     // Additional safety - if there are no infected, nothing to process
     if (infectedBeforeProcessing === 0) {
+      props.status = props.recoveredCount > 0 ? 'recovered' : 'susceptible';
+      props.recoveryDay = currentDay;
       return;
     }
     
@@ -481,13 +528,15 @@ const SimulationEngine = (() => {
     
     // Update infected count after deaths
     props.infectedCount -= newDeaths;
-    props.deathCount += newDeaths;
+    props.deceasedCount += newDeaths;
     const infectedAfterDeaths = props.infectedCount;
     
     // Safety check - ensure we didn't go negative after deaths calculation
     if (infectedAfterDeaths < 0) {
       console.error(`Negative infected count (${infectedAfterDeaths}) after calculating deaths for ${props.name}. Resetting to 0.`);
       props.infectedCount = 0;
+      props.status = props.recoveredCount > 0 ? 'recovered' : 'susceptible';
+      props.recoveryDay = currentDay;
       return; // Skip further processing
     }
     
@@ -529,7 +578,7 @@ const SimulationEngine = (() => {
     if (props.isPatientZero && props.daysSinceInfection < 20 && props.infectedCount <= 0) {
       props.infectedCount = 1; // Keep at least 1 infected
     } else if (props.infectedCount <= 0) {
-      props.status = 'recovered';
+      props.status = props.recoveredCount > 0 ? 'recovered' : 'susceptible';
       props.recoveryDay = currentDay;
     }
   };
@@ -662,9 +711,15 @@ const SimulationEngine = (() => {
         
         // If there are no infections, update the city status accordingly
         if (city.properties.status === 'infected') {
-          city.properties.status = 'recovered';
+          city.properties.status = city.properties.recoveredCount > 0 ? 'recovered' : 'susceptible';
           city.properties.recoveryDay = currentDay;
         }
+      }
+      
+      // Double check that any city with zero infections shouldn't be 'infected'
+      if (city.properties.infectedCount === 0 && city.properties.status === 'infected') {
+        city.properties.status = city.properties.recoveredCount > 0 ? 'recovered' : 'susceptible';
+        city.properties.recoveryDay = currentDay;
       }
     });
   };
@@ -680,11 +735,19 @@ const SimulationEngine = (() => {
     if (currentDay >= 365) {
       endReason = 'Maximum simulation period reached (365 days)';
     } else if (zeroDaysCounter >= 7) {
-      const lowInfectionThreshold = Math.max(10, Math.ceil(stats.totalPopulation * 0.0001));
-      if (stats.infected === 0) {
-        endReason = `Infections reached zero for ${zeroDaysCounter} consecutive days`;
+      if (runUntilEradication) {
+        if (stats.infected === 0) {
+          endReason = `Disease successfully eradicated for ${zeroDaysCounter} consecutive days`;
+        } else {
+          endReason = 'Simulation manually stopped';
+        }
       } else {
-        endReason = `Infections fell below threshold (${lowInfectionThreshold}) for ${zeroDaysCounter} consecutive days`;
+        const lowInfectionThreshold = Math.max(10, Math.ceil(stats.totalPopulation * 0.0001));
+        if (stats.infected === 0) {
+          endReason = `Infections reached zero for ${zeroDaysCounter} consecutive days`;
+        } else {
+          endReason = `Infections fell below threshold (${lowInfectionThreshold}) for ${zeroDaysCounter} consecutive days`;
+        }
       }
     } else {
       endReason = 'Simulation manually stopped';
@@ -777,6 +840,8 @@ const SimulationEngine = (() => {
     getSimulationState,
     getSimulationHistory,
     addEventListener,
-    removeEventListener
+    removeEventListener,
+    setRunUntilEradication,
+    getRunUntilEradication
   };
 })(); 

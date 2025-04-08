@@ -12,7 +12,8 @@ const ControlsComponent = (() => {
     deceasedCount: null,
     recoveredCount: null,
     simulationSpeed: null,
-    simulationSpeedValue: null
+    simulationSpeedValue: null,
+    runUntilEradication: null
   };
   
   // Parameter sliders and their value display elements
@@ -49,6 +50,7 @@ const ControlsComponent = (() => {
     elements.recoveredCount = document.getElementById('recovered-count');
     elements.simulationSpeed = document.getElementById('simulation-speed');
     elements.simulationSpeedValue = document.getElementById('simulation-speed-value');
+    elements.runUntilEradication = document.getElementById('run-until-eradication');
     
     // Cache slider elements
     paramSliders.rFactor.input = document.getElementById('r-factor');
@@ -106,6 +108,12 @@ const ControlsComponent = (() => {
       const speed = parseFloat(elements.simulationSpeed.value);
       elements.simulationSpeedValue.textContent = `${speed.toFixed(1)}x`;
       SimulationEngine.setSimulationSpeed(speed);
+    });
+    
+    // Run until eradication checkbox
+    elements.runUntilEradication.addEventListener('change', () => {
+      SimulationEngine.setRunUntilEradication(elements.runUntilEradication.checked);
+      console.log(`Run until eradication set to: ${elements.runUntilEradication.checked}`);
     });
     
     // Setup parameter sliders
@@ -297,7 +305,9 @@ const ControlsComponent = (() => {
    * Resets the simulation
    */
   const resetSimulation = () => {
-    SimulationEngine.resetSimulation(true);
+    SimulationEngine.resetSimulation();
+    // Keep the run-until-eradication setting after reset
+    SimulationEngine.setRunUntilEradication(elements.runUntilEradication.checked);
   };
   
   /**
