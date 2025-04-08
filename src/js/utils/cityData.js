@@ -164,20 +164,33 @@ const CityDataUtil = (() => {
     let infected = 0;
     let deceased = 0;
     let recovered = 0;
+    let susceptibleCount = 0; // Directly count susceptible population
     
     citiesData.features.forEach(city => {
-      totalPopulation += city.properties.population;
-      infected += city.properties.infectedCount;
-      deceased += city.properties.deceasedCount;
-      recovered += city.properties.recoveredCount;
+      const population = city.properties.population;
+      const infectedCount = city.properties.infectedCount;
+      const deceasedCount = city.properties.deceasedCount;
+      const recoveredCount = city.properties.recoveredCount;
+      
+      // Calculate susceptible for each city individually
+      const citySusceptible = Math.max(0, population - infectedCount - deceasedCount - recoveredCount);
+      
+      totalPopulation += population;
+      infected += infectedCount;
+      deceased += deceasedCount;
+      recovered += recoveredCount;
+      susceptibleCount += citySusceptible;
     });
+    
+    // Safety check to ensure susceptible is never negative
+    const susceptible = Math.max(0, susceptibleCount);
     
     return {
       totalPopulation,
       infected,
       deceased,
       recovered,
-      susceptible: totalPopulation - infected - deceased - recovered
+      susceptible
     };
   };
 
