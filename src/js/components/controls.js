@@ -52,6 +52,12 @@ const ControlsComponent = (() => {
     elements.simulationSpeedValue = document.getElementById('simulation-speed-value');
     elements.runUntilEradication = document.getElementById('run-until-eradication');
     
+    // Ensure dark mode is set as default
+    elements.themeToggle.checked = true;
+    document.body.classList.add('dark-mode');
+    document.body.classList.remove('light-mode');
+    elements.darkModeStylesheet.removeAttribute('disabled');
+    
     // Cache slider elements
     paramSliders.rFactor.input = document.getElementById('r-factor');
     paramSliders.rFactor.display = document.getElementById('r-factor-value');

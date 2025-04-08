@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     ReportComponent.init();
     console.log('Report component initialized');
     
+    // Initial call to onThemeChange to ensure chart reflects dark mode
+    ReportComponent.onThemeChange();
+    
     // Connect theme toggle to update chart
     document.getElementById('theme-toggle').addEventListener('change', () => {
       ReportComponent.onThemeChange();
