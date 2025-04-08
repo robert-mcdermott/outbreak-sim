@@ -543,7 +543,13 @@ const SimulationEngine = (() => {
     // Calculate recoveries differently based on day    
     let newRecoveries;
     
-    if (currentDay < 30) {
+    // When there's only 1 infected person left, increase likelihood of complete recovery
+    // This ensures cities don't get stuck with 1 infected indefinitely
+    if (infectedAfterDeaths === 1) {
+      // 80% chance of recovery when only 1 infected person remains
+      // This ensures eventually all infections clear out
+      newRecoveries = Math.random() < 0.8 ? 1 : 0;
+    } else if (currentDay < 30) {
       // Reduce recovery rate in the early days
       newRecoveries = Math.round(infectedAfterDeaths * 0.3);
     } else {
@@ -551,6 +557,12 @@ const SimulationEngine = (() => {
       // rather than having all infected recover at once
       const recoveryRate = 1 / currentParams.recoveryPeriod;
       newRecoveries = Math.round(infectedAfterDeaths * recoveryRate);
+      
+      // Ensure at least 1 recovery per turn when infection count is low
+      // This helps prevent cities from being stuck with low infection counts
+      if (infectedAfterDeaths <= 10 && newRecoveries === 0) {
+        newRecoveries = 1;
+      }
     }
     
     // Ensure we don't exceed remaining infected count
