@@ -1,0 +1,174 @@
+/* Dark Mode with SynthWave '84 Theme */
+:root {
+  --dark-bg: #262335;
+  --dark-panel-bg: #2a2139;
+  --dark-header-bg: #241b2f;
+  --dark-text-color: #ffffff;
+  --dark-border-color: #34294f;
+  
+  --synthwave-purple: #b381c5;
+  --synthwave-pink: #ff7edb;
+  --synthwave-blue: #36f9f6;
+  --synthwave-yellow: #fede5d;
+  --synthwave-red: #fe4450;
+}
+
+body.dark-mode {
+  background-color: var(--dark-bg);
+  color: var(--dark-text-color);
+}
+
+body.dark-mode header {
+  background-color: var(--dark-header-bg);
+  border-bottom-color: var(--dark-border-color);
+}
+
+body.dark-mode .control-panel,
+body.dark-mode #report-container {
+  background-color: var(--dark-panel-bg);
+  border: 1px solid var(--dark-border-color);
+  box-shadow: 0 0 10px rgba(255, 126, 219, 0.1);
+}
+
+body.dark-mode .panel-section {
+  border-bottom-color: var(--dark-border-color);
+}
+
+body.dark-mode #selected-city,
+body.dark-mode .report-stat {
+  background-color: var(--dark-header-bg);
+}
+
+/* Stats */
+body.dark-mode .stat.infected {
+  background-color: rgba(254, 68, 80, 0.3);
+}
+
+body.dark-mode .stat.deceased {
+  background-color: rgba(43, 38, 53, 0.5);
+}
+
+body.dark-mode .stat.recovered {
+  background-color: rgba(54, 249, 246, 0.2);
+}
+
+body.dark-mode .stat.day {
+  background-color: rgba(179, 129, 197, 0.2);
+}
+
+/* Buttons */
+body.dark-mode .btn-primary {
+  background-color: var(--synthwave-blue);
+  color: #000;
+  text-shadow: 0 0 2px rgba(54, 249, 246, 0.5);
+  box-shadow: 0 0 4px var(--synthwave-blue);
+}
+
+body.dark-mode .btn-primary:hover {
+  background-color: #65faf9;
+  box-shadow: 0 0 8px var(--synthwave-blue);
+}
+
+body.dark-mode .btn-secondary {
+  background-color: var(--synthwave-purple);
+  color: #000;
+  text-shadow: 0 0 2px rgba(179, 129, 197, 0.5);
+  box-shadow: 0 0 4px var(--synthwave-purple);
+}
+
+body.dark-mode .btn-secondary:hover {
+  background-color: #c490d7;
+  box-shadow: 0 0 8px var(--synthwave-purple);
+}
+
+body.dark-mode .btn-danger {
+  background-color: var(--synthwave-red);
+  color: #000;
+  text-shadow: 0 0 2px rgba(254, 68, 80, 0.5);
+  box-shadow: 0 0 4px var(--synthwave-red);
+}
+
+body.dark-mode .btn-danger:hover {
+  background-color: #ff5e68;
+  box-shadow: 0 0 8px var(--synthwave-red);
+}
+
+/* Forms */
+body.dark-mode .parameter label {
+  color: var(--synthwave-pink);
+  text-shadow: 0 0 2px rgba(255, 126, 219, 0.5);
+}
+
+body.dark-mode input[type="range"] {
+  height: 4px;
+  background: linear-gradient(90deg, var(--synthwave-blue), var(--synthwave-pink));
+}
+
+body.dark-mode .parameter select {
+  background-color: var(--dark-header-bg);
+  border-color: var(--synthwave-purple);
+  color: var(--dark-text-color);
+}
+
+body.dark-mode .parameter-value {
+  color: var(--synthwave-yellow);
+  text-shadow: 0 0 2px rgba(254, 222, 93, 0.5);
+}
+
+body.dark-mode h2, 
+body.dark-mode h3 {
+  color: var(--synthwave-yellow);
+  text-shadow: 0 0 4px rgba(254, 222, 93, 0.4);
+}
+
+body.dark-mode header h1 {
+  color: var(--synthwave-pink);
+  text-shadow: 0 0 6px rgba(255, 126, 219, 0.5);
+}
+
+body.dark-mode .map-overlay {
+  background-color: rgba(42, 33, 57, 0.85);
+  border: 1px solid var(--synthwave-purple);
+}
+
+/* City markers */
+body.dark-mode .city-marker {
+  border: 1px solid var(--dark-bg);
+}
+
+body.dark-mode .city-marker.infected {
+  background-color: var(--synthwave-red);
+  box-shadow: 0 0 8px var(--synthwave-red);
+}
+
+body.dark-mode .city-marker.high-infection {
+  background-color: var(--synthwave-red);
+  box-shadow: 0 0 15px var(--synthwave-red), 0 0 25px var(--synthwave-red);
+}
+
+body.dark-mode .city-marker.deceased {
+  background-color: var(--synthwave-purple);
+  box-shadow: 0 0 5px var(--synthwave-purple);
+}
+
+body.dark-mode .city-marker.recovered {
+  background-color: var(--synthwave-blue);
+  box-shadow: 0 0 5px var(--synthwave-blue);
+}
+
+/* Add some animation for visual appeal */
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 126, 219, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 126, 219, 0.8);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 126, 219, 0.5);
+  }
+}
+
+body.dark-mode header h1 {
+  animation: glow 3s ease-in-out infinite;
+} 

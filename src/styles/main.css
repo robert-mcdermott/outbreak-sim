@@ -1,0 +1,446 @@
+/* Main CSS for Viral Outbreak Simulator */
+
+:root {
+  --primary-color: #4a5568;
+  --secondary-color: #2b6cb0;
+  --danger-color: #e53e3e;
+  --success-color: #38a169;
+  --warning-color: #d69e2e;
+  --text-color: #1a202c;
+  --bg-color: #f7fafc;
+  --panel-bg: #ffffff;
+  --header-bg: #edf2f7;
+  --border-color: #e2e8f0;
+  --infected-color: #f56565;
+  --deceased-color: #4a5568;
+  --recovered-color: #48bb78;
+  
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --border-radius: 4px;
+  --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --transition: all 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  line-height: 1.5;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--secondary-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--secondary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+main {
+  padding: 1rem;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.simulator-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .simulator-container {
+    flex-direction: row;
+  }
+  
+  .map-container {
+    flex: 2;
+  }
+  
+  .control-panel {
+    flex: 1;
+    max-width: 350px;
+  }
+}
+
+.map-container {
+  position: relative;
+  height: 100%;
+  min-height: 500px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  flex: 1;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.map-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  z-index: 1000;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  padding: 8px;
+  border-radius: var(--border-radius);
+  text-align: center;
+}
+
+.stat.infected {
+  background-color: rgba(245, 101, 101, 0.2);
+}
+
+.stat.deceased {
+  background-color: rgba(74, 85, 104, 0.2);
+}
+
+.stat.recovered {
+  background-color: rgba(72, 187, 120, 0.2);
+}
+
+.stat.day {
+  background-color: rgba(237, 242, 247, 0.8);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.control-panel {
+  background-color: var(--panel-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100%;
+  max-height: 100%;
+}
+
+.panel-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.panel-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.panel-section h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.parameter {
+  margin-bottom: 0.75rem;
+}
+
+.parameter label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.parameter input[type="range"] {
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.parameter select {
+  width: 100%;
+  padding: 0.375rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+}
+
+.parameter-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  float: right;
+}
+
+.control-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--border-radius);
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2c5282;
+}
+
+.btn-secondary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #2d3748;
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c53030;
+}
+
+#selected-city {
+  font-weight: 600;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  background-color: var(--header-bg);
+  border-radius: var(--border-radius);
+}
+
+/* Report Styles */
+#report-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2000;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: var(--panel-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  transition: var(--transition);
+}
+
+#report-container.hidden {
+  display: none;
+}
+
+#report-container h2 {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.report-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .report-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.report-stat {
+  background-color: var(--header-bg);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  text-align: center;
+}
+
+.report-stat h4 {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.report-stat p {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.report-chart {
+  min-height: 300px;
+}
+
+.report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* City marker styles for the map */
+.city-marker {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  background-color: gray;
+  border: 1px solid white;
+}
+
+.city-marker.infected {
+  background-color: var(--infected-color);
+  box-shadow: 0 0 0 5px rgba(245, 101, 101, 0.3);
+}
+
+.city-marker.high-infection {
+  background-color: var(--infected-color);
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 0 0 8px rgba(245, 101, 101, 0.5);
+}
+
+.city-marker.deceased {
+  background-color: var(--deceased-color);
+}
+
+.city-marker.recovered {
+  background-color: var(--recovered-color);
+}
+
+.report-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1999;
+}
+
+.report-backdrop.hidden {
+  display: none;
+} 
