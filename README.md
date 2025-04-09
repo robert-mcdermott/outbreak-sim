@@ -35,7 +35,7 @@ A high-resolution, interactive viral outbreak simulator for the continental USA 
 
 1. Clone this repository:
    ```
-   git clone [repository-url]
+   git clone https://github.com/robert-mcdermott/outbreak-sim.git
    cd outbreak-sim
    ```
 

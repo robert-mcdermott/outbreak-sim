@@ -190,6 +190,12 @@ const MapComponent = (() => {
     // Update UI
     document.getElementById('selected-city').textContent = `${city.properties.name}, ${city.properties.state}`;
     
+    // Update Start button tooltip
+    const startBtn = document.getElementById('start-btn');
+    if (startBtn) {
+      startBtn.setAttribute('data-tooltip', 'Click to start the simulation');
+    }
+    
     // Prevent further patient zero selections
     patientZeroSet = true;
     console.log('patientZeroSet =', patientZeroSet);
@@ -213,6 +219,12 @@ const MapComponent = (() => {
     
     // Update the city marker to show infection
     updateCityMarker(city);
+    
+    // Dispatch custom event for city selection
+    document.dispatchEvent(new CustomEvent('citySelected', {
+      detail: { city: city.properties.name, state: city.properties.state }
+    }));
+    
     console.log('Patient zero set complete');
   };
   

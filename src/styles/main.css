@@ -2,7 +2,9 @@
 
 :root {
   --primary-color: #4a5568;
+  --primary-color-rgb: 74, 85, 104;
   --secondary-color: #2b6cb0;
+  --secondary-color-rgb: 43, 108, 176;
   --danger-color: #e53e3e;
   --success-color: #38a169;
   --warning-color: #d69e2e;
@@ -57,6 +59,25 @@ header {
 header h1 {
   font-size: 1.5rem;
   font-weight: 600;
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.github-link:hover {
+  opacity: 1;
+}
+
+.github-link svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--text-color);
 }
 
 .switch {
@@ -460,4 +481,227 @@ main {
 
 .report-backdrop.hidden {
   display: none;
+}
+
+/* Onboarding Tooltips */
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.onboarding-overlay.hidden {
+  display: none;
+}
+
+.onboarding-welcome {
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+  max-width: 500px;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  z-index: 9999;
+}
+
+.onboarding-welcome h2 {
+  margin-top: 0;
+  color: var(--secondary-color);
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.onboarding-welcome p {
+  margin-bottom: 12px;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+.onboarding-welcome .btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: var(--secondary-color);
+  transition: all 0.2s ease;
+}
+
+.onboarding-welcome .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip {
+  position: absolute;
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+  padding: 10px 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 250px;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: opacity 0.3s;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  border-style: solid;
+  border-width: 8px;
+}
+
+.tooltip.top::after {
+  border-color: var(--panel-bg) transparent transparent transparent;
+  top: 100%;
+  left: 50%;
+  margin-left: -8px;
+}
+
+.tooltip.bottom::after {
+  border-color: transparent transparent var(--panel-bg) transparent;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -8px;
+}
+
+.tooltip.left::after {
+  border-color: transparent transparent transparent var(--panel-bg);
+  top: 50%;
+  left: 100%;
+  margin-top: -8px;
+}
+
+.tooltip.right::after {
+  border-color: transparent var(--panel-bg) transparent transparent;
+  top: 50%;
+  right: 100%;
+  margin-top: -8px;
+}
+
+.tooltip-highlight {
+  position: absolute;
+  border: 2px solid var(--primary-color);
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.3);
+  pointer-events: none;
+  z-index: 999;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
+}
+
+.helper-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 995;
+  transition: all 0.2s ease;
+}
+
+.helper-button:hover {
+  transform: scale(1.1);
+}
+
+.start-btn-tooltip {
+  position: absolute;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 900;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* Start button tooltip */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--primary-color);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  pointer-events: none;
+  z-index: 900;
+}
+
+[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%) translateY(50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--primary-color) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  z-index: 900;
+}
+
+button[disabled][data-tooltip]::after,
+button[disabled][data-tooltip]::before {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+#start-btn[data-tooltip]:hover::after,
+#start-btn[data-tooltip]:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Highlight the Patient Zero panel when no city is selected */
+.panel-section:first-of-type {
+  position: relative;
+}
+
+body:not(.simulation-running) .panel-section:first-of-type {
+  animation: panel-pulse 2s infinite;
+}
+
+@keyframes panel-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
 } 

@@ -1,10 +1,10 @@
 /* Dark Mode with SynthWave '84 Theme */
 :root {
   --dark-bg: #262335;
-  --dark-panel-bg: #2a2139;
-  --dark-header-bg: #241b2f;
-  --dark-text-color: #ffffff;
-  --dark-border-color: #34294f;
+  --dark-panel-bg: #2d3748;
+  --dark-header-bg: #2d3748;
+  --dark-text-color: #e2e8f0;
+  --dark-border-color: #4a5568;
   
   --synthwave-purple: #b381c5;
   --synthwave-pink: #ff7edb;
@@ -126,6 +126,15 @@ body.dark-mode header h1 {
   text-shadow: 0 0 6px rgba(255, 126, 219, 0.5);
 }
 
+body.dark-mode .github-link svg {
+  fill: var(--synthwave-pink);
+  filter: drop-shadow(0 0 3px rgba(255, 126, 219, 0.5));
+}
+
+body.dark-mode .github-link:hover svg {
+  filter: drop-shadow(0 0 5px rgba(255, 126, 219, 0.8));
+}
+
 body.dark-mode .map-overlay {
   background-color: rgba(42, 33, 57, 0.85);
   border: 1px solid var(--synthwave-purple);
@@ -171,4 +180,47 @@ body.dark-mode .city-marker.recovered {
 
 body.dark-mode header h1 {
   animation: glow 3s ease-in-out infinite;
+}
+
+/* Dark mode specific styles for the onboarding welcome modal */
+body.dark-mode .onboarding-welcome {
+  background-color: var(--dark-panel-bg);
+  color: var(--dark-text-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .onboarding-welcome h2 {
+  color: #63b3ed;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .onboarding-welcome .btn {
+  background-color: #4299e1;
+}
+
+body.dark-mode .onboarding-welcome .btn:hover {
+  background-color: #3182ce;
+}
+
+/* Dark mode specific styles for tooltips */
+body.dark-mode .tooltip {
+  background-color: var(--dark-panel-bg);
+  color: var(--dark-text-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .tooltip.top::after {
+  border-color: var(--dark-panel-bg) transparent transparent transparent;
+}
+
+body.dark-mode .tooltip.bottom::after {
+  border-color: transparent transparent var(--dark-panel-bg) transparent;
+}
+
+body.dark-mode .tooltip.left::after {
+  border-color: transparent transparent transparent var(--dark-panel-bg);
+}
+
+body.dark-mode .tooltip.right::after {
+  border-color: transparent var(--dark-panel-bg) transparent transparent;
 } 

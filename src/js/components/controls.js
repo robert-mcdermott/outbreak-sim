@@ -329,6 +329,9 @@ const ControlsComponent = (() => {
     if (!isRunning) {
       elements.startBtn.classList.remove('disabled');
       elements.startBtn.removeAttribute('disabled');
+      document.body.classList.remove('simulation-running');
+    } else {
+      document.body.classList.add('simulation-running');
     }
     
     // Disable parameter controls while running
